@@ -59,7 +59,13 @@ class YebuyuMuLuResolve(ResolveEngine):
         for index, child in enumerate(mulu):
             title = child.string.strip().replace(" ", "")
             title = convert_num(title)
-            title.replace("^.//.", "")
+            titles = title.split(".")
+            if len(titles) == 3:
+                title = titles[1] + "." + titles[2]
+            elif len(titles) == 2:
+                title = titles[0] + "." + titles[1]
+            else:
+                pass
             chapters.append(UrlChapter(__baseUrl__ + child.get('href'), title, index))
         return chapters
 
