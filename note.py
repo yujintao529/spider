@@ -30,6 +30,8 @@ class Engine(object):
         pass
 
 
+
+
 class ResolveEngine(Engine):
 
     def __init__(self, content):
@@ -59,17 +61,23 @@ class LoadEngine(Engine):
 
 class Note(object):
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, title):
+        self.title = title
         self.chapters = list()
+        # 数据库使用
+        self.id = -1
+        self.create_time = None
 
     def __str__(self):
         strs = list()
-        strs.append(self.name)
+        strs.append(self.title)
         strs.append("\n")
         for inx, chapter in self.chapters:
             strs.append(chapter).append("\n")
         return "".join(strs)
+
+    def simple_str(self):
+        return self.title + "[" + str(self.id) + "-" + str(len(self.chapters)) + "]"
 
 
 class Chapter(object):
@@ -80,6 +88,8 @@ class Chapter(object):
 
     def __str__(self):
         return self.num, ".", self.title, "-", self.content.substring[0, 20]
+
+    def inject(selff):
 
 
 class UrlChapter(Chapter):
