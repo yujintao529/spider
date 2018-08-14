@@ -89,7 +89,8 @@ class Chapter(object):
     def __str__(self):
         return self.num, ".", self.title, "-", self.content.substring[0, 20]
 
-    def inject(selff):
+    def inject(self,result_dic):
+        pass
 
 
 class UrlChapter(Chapter):

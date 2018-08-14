@@ -55,7 +55,5 @@ def find_note_chapter(connection, note_id, title):
             return None
         else:
             chapter=Chapter()
-            chapter.
-            note.id = result['id']
-            note.create_time = result['create_time']
-
+            chapter.inject(result)
+            return chapter
