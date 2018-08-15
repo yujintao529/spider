@@ -2,8 +2,6 @@ import re
 import string
 
 
-def debug(obj):
-    print(obj)
 
 
 common_used_numerals_tmp = {'零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,

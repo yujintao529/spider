@@ -4,8 +4,7 @@ import ssl
 import traceback
 import urllib.request
 import threadpool
-from util import debug
-
+import log
 from bs4 import BeautifulSoup
 import disk
 
@@ -24,12 +23,25 @@ def chapter_disk_handler(chapter, parent_path, file_name):
     return file
 
 
+def is_normal(state):
+    return state == 1000
+
+
+def is_error(state):
+    return state == 9999
+
+
+def is_never(state):
+    return state == 0
+
+
 class Engine(object):
 
     def execute(self):
         pass
 
-
+    def exit(self):
+        pass
 
 
 class ResolveEngine(Engine):
@@ -48,13 +60,14 @@ class LoadEngine(Engine):
         self.charset = charset
 
     def execute(self):
+        result = None
         try:
             request = urllib.request.Request(url=self.url, headers=self.headers)
             response = urllib.request.urlopen(url=request, context=self.context)
-            result = response.read().decode(self.charset)
-            debug("load success : " + self.url)
+            result = response.read().decode(self.charset,'ignore')
+            log.debug("LoadEngine http load success  " + self.url)
         except Exception:
-            print("loadEngine Error " + self.url)
+            print("LoadEngine http load error " + self.url)
             traceback.print_exc()
         return result
 
@@ -62,9 +75,8 @@ class LoadEngine(Engine):
 class Note(object):
 
     def __init__(self, title):
-        self.title = title
         self.chapters = list()
-        # 数据库使用
+        self.title = title
         self.id = -1
         self.create_time = None
 
@@ -76,25 +88,50 @@ class Note(object):
             strs.append(chapter).append("\n")
         return "".join(strs)
 
+    def inject(self, result_dic):
+        if result_dic is not None:
+            self.id = result_dic['id']
+            self.create_time = result_dic['create_time']
+            self.title = result_dic['title']
+
     def simple_str(self):
         return self.title + "[" + str(self.id) + "-" + str(len(self.chapters)) + "]"
 
 
 class Chapter(object):
-    def __init__(self, title, num=-1, content=None):
+    def __init__(self, title, num=-1, content=()):
         self.title = title
         self.num = num
         self.content = content
+        self.id = -1
+        self.path = None
+        self.create_time = None
+        self.update_time = None
+        self.state = 0
+        self.note_id = -1
 
     def __str__(self):
-        return self.num, ".", self.title, "-", self.content.substring[0, 20]
+        return str(self.num) + "." + self.title + "-"
 
-    def inject(self,result_dic):
-        pass
+    def to_string(self):
+        return self.__str__()
+
+    def inject(self, result_dic):
+        if result_dic is None:
+            return
+
+        self.content = result_dic['content']
+        self.path = result_dic['path']
+        self.create_time = result_dic['create_time']
+        self.update_time = result_dic['update_time']
+        self.state = result_dic['state']
+        self.note_id = result_dic['note_id']
+        self.num = result_dic['num']
+        self.title = result_dic['title']
+        self.id = result_dic['id']
 
 
 class UrlChapter(Chapter):
-    def __init__(self, url, title, file=None, num=-1, content=None):
+    def __init__(self, url, title, num=-1, content=None):
         super().__init__(title, num, content)
         self.url = url
-        self.file = file
