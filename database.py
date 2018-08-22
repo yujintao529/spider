@@ -6,6 +6,9 @@ from note import Chapter, Note
 
 
 def open_connection():
+    """
+    打开数据库连接，获取连接对象
+    """
     connection = pymysql.connect(host='127.0.0.1',
                                  user='root',
                                  password='root',
@@ -16,15 +19,26 @@ def open_connection():
 
 
 def close_connection(connection):
+    """
+        关闭数据库连接
+    """
     connection.close()
 
 
 def cursor_execute(connection, cursor_cb):
+    """
+    @param connection 数据库连接对象
+    @param cursor_cb 闭包函数，参数是connection和cursor
+    """
     with connection.cursor() as cursor:
         cursor_cb(connection, cursor)
 
 
 def cursor_execute(connection):
+    """
+    获取数据库cursor独享
+    @return 数据库cursor对象
+    """
     return connection.cursor()
 
 
